@@ -1,4 +1,4 @@
-.PHONY: install generate-env db-up db-down db-migrate-dev
+.PHONY: install generate-env db-up db-down db-migrate-dev db-seed-dev
 
 install:
 	@echo "Installing dependencies..."
@@ -21,7 +21,11 @@ db-migrate-dev:
 	@echo "Migrating database..."
 	pnpm migrate:dev
 
-setup-dev: install generate-env db-up db-migrate-dev
+db-seed-dev:
+	@echo "Seeding database..."
+	pnpm seed:dev
+
+setup-dev: install generate-env db-up db-migrate-dev db-seed-dev
 
 start-dev: db-up
 	pnpm start:dev
