@@ -1,9 +1,10 @@
 import { Module } from "@nestjs/common";
 import { PrismaModule } from "./prisma/prisma.module";
-import { InboxMessagesModule } from './inbox-messages/inbox-messages.module';
+import { InboxModule } from "./inbox/inbox-messages.module";
+import { UsersModule } from "./users/users.module";
 
 @Module({
-	imports: [PrismaModule, InboxMessagesModule],
+	imports: [PrismaModule, InboxModule, UsersModule],
 	controllers: [],
 	providers: [],
 })

@@ -7,4 +7,4 @@ import { InboxMessagesRepository } from "./inbox-messages.repository";
 	controllers: [InboxMessagesController],
 	providers: [InboxMessagesService, InboxMessagesRepository],
 })
-export class InboxMessagesModule {}
+export class InboxModule {}

@@ -7,7 +7,6 @@ async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
 
 	app.useGlobalPipes(new CustomValidationPipe());
-
 	const swaggerConfig = new DocumentBuilder()
 		.setTitle("GTD API")
 		.setVersion("0.1")
