@@ -1,14 +1,16 @@
+import { AccessTokenGuard } from "@/auth/guards/access-token.guard";
 import { Body, Controller, Get, Param, Patch, UseGuards } from "@nestjs/common";
-import { InboxMessagesService } from "./inbox-messages.service";
 import { ApiBearerAuth, ApiOkResponse } from "@nestjs/swagger";
-import { InboxMessageEntity } from "./entities/inbox-message.entity";
 import { UpdateInboxMessageDto } from "./dto/update-inbox-message.dto";
+import { InboxMessageEntity } from "./entities/inbox-message.entity";
+import { InboxMessagesService } from "./inbox-messages.service";
 
 @Controller("inbox-messages")
 export class InboxMessagesController {
 	constructor(private readonly inboxMessagesService: InboxMessagesService) {}
 
 	@Get()
+	@UseGuards(AccessTokenGuard)
 	@ApiBearerAuth()
 	@ApiOkResponse({ type: [InboxMessageEntity] })
 	async getInboxMessages() {
@@ -19,6 +21,7 @@ export class InboxMessagesController {
 	}
 
 	@Patch(":id")
+	@UseGuards(AccessTokenGuard)
 	@ApiBearerAuth()
 	@ApiOkResponse({ type: InboxMessageEntity })
 	async updateInboxMessage(

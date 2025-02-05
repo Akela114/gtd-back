@@ -11,8 +11,8 @@ export class CustomValidationPipe extends ValidationPipe {
 			exceptionFactory: (errors) =>
 				new BadRequestException({
 					statusCode: HttpStatus.BAD_REQUEST,
-					error: "Bad Request",
-					messages: Object.fromEntries(errors.map(formatValidationError)),
+					message: "Bad Request",
+					errors: Object.fromEntries(errors.map(formatValidationError)),
 				}),
 		});
 	}

@@ -1,13 +1,13 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { UsersRepository } from "./users.repository";
 import { CreateUserDto } from "./dto/create-user.dto";
-import { PasswordService } from "@/password/password.service";
+import { UserPasswordService } from "./user-password.service";
+import { UsersRepository } from "./users.repository";
 
 @Injectable()
 export class UsersService {
 	constructor(
 		private usersRepository: UsersRepository,
-		private passwordService: PasswordService,
+		private userPasswordService: UserPasswordService,
 	) {}
 
 	async createUser(dto: CreateUserDto) {
@@ -27,8 +27,8 @@ export class UsersService {
 			);
 		}
 
-		const passwordSalt = this.passwordService.createPasswordSalt();
-		const passwordHash = await this.passwordService.getPasswordHash(
+		const passwordSalt = this.userPasswordService.createPasswordSalt();
+		const passwordHash = await this.userPasswordService.getPasswordHash(
 			dto.password,
 			passwordSalt,
 		);
@@ -41,8 +41,8 @@ export class UsersService {
 		});
 	}
 
-	async getUserById(id: string) {
-		return this.usersRepository.getUserById(id);
+	async getUserById(userId: string) {
+		return this.usersRepository.getUserById(userId);
 	}
 
 	async getUserByEmail(email: string) {

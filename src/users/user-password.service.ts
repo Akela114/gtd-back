@@ -1,11 +1,11 @@
-import { Injectable } from "@nestjs/common";
 import { randomBytes, scrypt } from "node:crypto";
 import { promisify } from "node:util";
+import { Injectable } from "@nestjs/common";
 
 const scryptAsync = promisify(scrypt);
 
 @Injectable()
-export class PasswordService {
+export class UserPasswordService {
 	createPasswordSalt() {
 		return randomBytes(16).toString("hex");
 	}

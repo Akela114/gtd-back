@@ -8,7 +8,8 @@ export class UserEntity implements Partial<User> {
 	@ApiProperty({ description: "Почта" })
 	email: string;
 
-	constructor(user: UserEntity) {
-		Object.assign(this, user);
+	constructor(data: UserEntity) {
+		this.username = data.username;
+		this.email = data.email;
 	}
 }

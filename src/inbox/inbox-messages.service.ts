@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { InboxMessagesRepository } from "./inbox-messages.repository";
 import { UpdateInboxMessageDto } from "./dto/update-inbox-message.dto";
+import { InboxMessagesRepository } from "./inbox-messages.repository";
 
 @Injectable()
 export class InboxMessagesService {
@@ -10,14 +10,14 @@ export class InboxMessagesService {
 		return this.inboxMessagesRepository.getInboxMessages();
 	}
 
-	updateInboxMessage(id: string, data: UpdateInboxMessageDto) {
+	updateInboxMessage(id: string, dto: UpdateInboxMessageDto) {
 		const isInboxMessageExists = this.checkIfInboxMessageExists(id);
 
 		if (!isInboxMessageExists) {
 			throw new NotFoundException("Сообщение не найдено");
 		}
 
-		return this.inboxMessagesRepository.updateInboxMessage(id, data);
+		return this.inboxMessagesRepository.updateInboxMessage(id, dto);
 	}
 
 	private async checkIfInboxMessageExists(id: string) {

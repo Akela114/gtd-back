@@ -11,6 +11,9 @@ export class UsersRepository {
 			where: {
 				id,
 			},
+			include: {
+				refreshTokens: true,
+			},
 		});
 	}
 

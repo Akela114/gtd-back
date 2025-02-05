@@ -14,7 +14,10 @@ export class InboxMessageEntity implements InboxMessage {
 	@ApiProperty({ description: "Дата последнего обновления" })
 	updatedAt: Date;
 
-	constructor(inboxMessage: Partial<InboxMessage>) {
-		Object.assign(this, inboxMessage);
+	constructor(data: InboxMessage) {
+		this.id = data.id;
+		this.message = data.message;
+		this.createdAt = data.createdAt;
+		this.updatedAt = data.updatedAt;
 	}
 }
