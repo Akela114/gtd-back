@@ -20,6 +20,10 @@ export class InboxMessagesService {
 		return this.inboxMessagesRepository.updateInboxMessage(id, dto);
 	}
 
+	deleteInboxMessage(id: string) {
+		return this.inboxMessagesRepository.deleteInboxMessage(id);
+	}
+
 	private async checkIfInboxMessageExists(id: string) {
 		const inboxMessage =
 			await this.inboxMessagesRepository.getInboxMessageById(id);

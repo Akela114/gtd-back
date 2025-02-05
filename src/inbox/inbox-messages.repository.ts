@@ -29,4 +29,12 @@ export class InboxMessagesRepository {
 			data,
 		});
 	}
+
+	deleteInboxMessage(id: Prisma.InboxMessageWhereUniqueInput["id"]) {
+		return this.prismaService.inboxMessage.delete({
+			where: {
+				id,
+			},
+		});
+	}
 }
