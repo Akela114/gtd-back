@@ -1,7 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { User } from "@prisma/client";
 
-export class UserEntity implements Partial<User> {
+export class UserEntity {
 	@ApiProperty({ description: "Сообщение" })
 	username: string;
 

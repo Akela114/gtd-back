@@ -1,40 +1,60 @@
-import { PrismaService } from "@/prisma/prisma.service";
-import { Injectable } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
+import { DB_CONNECTION_PROVIDER_NAME } from "@/constants";
+import { AvailableTableColumns, DBConnection } from "@/drizzle/drizzle.types";
+import { inboxMessages } from "@/drizzle/schema/schema";
+import { Inject, Injectable } from "@nestjs/common";
+import { and, eq } from "drizzle-orm";
 
 @Injectable()
 export class InboxMessagesRepository {
-	constructor(private prismaService: PrismaService) {}
+	constructor(
+		@Inject(DB_CONNECTION_PROVIDER_NAME) private dbConnection: DBConnection,
+	) {}
 
-	getInboxMessages() {
-		return this.prismaService.inboxMessage.findMany();
+	getInboxMessagesOfUser(userId: string) {
+		return this.dbConnection
+			.select()
+			.from(inboxMessages)
+			.where(eq(inboxMessages.userId, userId));
 	}
 
-	getInboxMessageById(id: Prisma.InboxMessageWhereUniqueInput["id"]) {
-		return this.prismaService.inboxMessage.findUnique({
-			where: {
-				id,
-			},
-		});
+	async getInboxMessageOfUserById(id: string, userId: string) {
+		const result = await this.dbConnection
+			.select()
+			.from(inboxMessages)
+			.where(and(eq(inboxMessages.id, id), eq(inboxMessages.userId, userId)));
+
+		return result[0];
 	}
 
-	updateInboxMessage(
-		id: Prisma.InboxMessageWhereUniqueInput["id"],
-		data: Pick<Prisma.InboxMessageUpdateInput, "message">,
+	async createInboxMessage(data: AvailableTableColumns<typeof inboxMessages>) {
+		const result = await this.dbConnection
+			.insert(inboxMessages)
+			.values(data)
+			.returning();
+
+		return result[0];
+	}
+
+	async updateInboxMessageOfUser(
+		id: string,
+		data: Partial<AvailableTableColumns<typeof inboxMessages>>,
+		userId: string,
 	) {
-		return this.prismaService.inboxMessage.update({
-			where: {
-				id,
-			},
-			data,
-		});
+		const result = await this.dbConnection
+			.update(inboxMessages)
+			.set(data)
+			.where(and(eq(inboxMessages.id, id), eq(inboxMessages.userId, userId)))
+			.returning();
+
+		return result[0];
 	}
 
-	deleteInboxMessage(id: Prisma.InboxMessageWhereUniqueInput["id"]) {
-		return this.prismaService.inboxMessage.delete({
-			where: {
-				id,
-			},
-		});
+	async deleteInboxMessageOfUser(id: string, userId: string) {
+		const result = await this.dbConnection
+			.delete(inboxMessages)
+			.where(and(eq(inboxMessages.id, id), eq(inboxMessages.userId, userId)))
+			.returning();
+
+		return result[0];
 	}
 }

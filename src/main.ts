@@ -1,9 +1,7 @@
-import { HttpAdapterHost, NestFactory } from "@nestjs/core";
+import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import * as cookieParser from "cookie-parser";
 import { AppModule } from "./app.module";
-import { CustomValidationPipe } from "./common/pipes/validation.pipe";
-import { PrismaClientExceptionFilter } from "./prisma/filters/prisma-client-exception/prisma-client-exception.filter";
 
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule);
@@ -18,12 +16,6 @@ async function bootstrap() {
 	SwaggerModule.setup("api", app, document);
 
 	app.use(cookieParser());
-
-	app.useGlobalPipes(new CustomValidationPipe());
-
-	const { httpAdapter } = app.get(HttpAdapterHost);
-
-	app.useGlobalFilters(new PrismaClientExceptionFilter(httpAdapter));
 
 	await app.listen(process.env.PORT ?? 3000);
 }

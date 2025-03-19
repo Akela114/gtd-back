@@ -1,6 +1,7 @@
+import { ZodValidationPipe } from "@/common/pipes/zod-validation.pipe";
 import { Body, Controller, Post } from "@nestjs/common";
 import { ApiCreatedResponse } from "@nestjs/swagger";
-import { CreateUserDto } from "./dto/create-user.dto";
+import { CreateUserDto, createUserSchema } from "./dto/create-user.dto";
 import { UserEntity } from "./entities/user.entity";
 import { UsersService } from "./users.service";
 
@@ -10,7 +11,9 @@ export class UsersController {
 
 	@Post()
 	@ApiCreatedResponse({ type: UserEntity })
-	async createUser(@Body() dto: CreateUserDto) {
+	async createUser(
+		@Body(new ZodValidationPipe(createUserSchema)) dto: CreateUserDto,
+	) {
 		const createdUser = await this.usersService.createUser(dto);
 		return new UserEntity(createdUser);
 	}

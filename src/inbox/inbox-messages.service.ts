@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import {
+	Injectable,
+	NotFoundException,
+	UnprocessableEntityException,
+} from "@nestjs/common";
+import { CreateInboxMessageDto } from "./dto/create-inbox-message.dto";
 import { UpdateInboxMessageDto } from "./dto/update-inbox-message.dto";
 import { InboxMessagesRepository } from "./inbox-messages.repository";
 
@@ -6,28 +11,51 @@ import { InboxMessagesRepository } from "./inbox-messages.repository";
 export class InboxMessagesService {
 	constructor(private inboxMessagesRepository: InboxMessagesRepository) {}
 
-	getInboxMessages() {
-		return this.inboxMessagesRepository.getInboxMessages();
+	getInboxMessagesOfUser(userId: string) {
+		return this.inboxMessagesRepository.getInboxMessagesOfUser(userId);
 	}
 
-	updateInboxMessage(id: string, dto: UpdateInboxMessageDto) {
-		const isInboxMessageExists = this.checkIfInboxMessageExists(id);
+	async createInboxMessage(dto: CreateInboxMessageDto, userId: string) {
+		const createdInboxMessage =
+			await this.inboxMessagesRepository.createInboxMessage({
+				...dto,
+				userId,
+			});
 
-		if (!isInboxMessageExists) {
-			throw new NotFoundException("Сообщение не найдено");
+		if (!createdInboxMessage) {
+			throw new UnprocessableEntityException("Inbox message not created");
 		}
 
-		return this.inboxMessagesRepository.updateInboxMessage(id, dto);
+		return createdInboxMessage;
 	}
 
-	deleteInboxMessage(id: string) {
-		return this.inboxMessagesRepository.deleteInboxMessage(id);
+	async updateInboxMessageOfUser(
+		id: string,
+		dto: UpdateInboxMessageDto,
+		userId: string,
+	) {
+		const updatedInboxMessage =
+			await this.inboxMessagesRepository.updateInboxMessageOfUser(
+				id,
+				dto,
+				userId,
+			);
+
+		if (!updatedInboxMessage) {
+			throw new NotFoundException("Inbox message not found");
+		}
+
+		return updatedInboxMessage;
 	}
 
-	private async checkIfInboxMessageExists(id: string) {
-		const inboxMessage =
-			await this.inboxMessagesRepository.getInboxMessageById(id);
+	async deleteInboxMessageOfUser(id: string, userId: string) {
+		const deletedInboxMessage =
+			await this.inboxMessagesRepository.deleteInboxMessageOfUser(id, userId);
 
-		return Boolean(inboxMessage);
+		if (!deletedInboxMessage) {
+			throw new NotFoundException("Inbox message not found");
+		}
+
+		return deletedInboxMessage;
 	}
 }

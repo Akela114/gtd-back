@@ -19,13 +19,13 @@ db-down:
 
 db-migrate-dev:
 	@echo "Migrating database..."
-	pnpm migrate:dev
+	npx drizzle-kit migrate
 
-db-seed-dev:
-	@echo "Seeding database..."
-	pnpm seed:dev
+# db-seed-dev:
+# 	@echo "Seeding database..."
+# 	pnpm seed:dev
 
-setup-dev: install generate-env db-up db-migrate-dev db-seed-dev
+setup-dev: install generate-env db-up db-migrate-dev
 
 start-dev: db-up
 	pnpm start:dev

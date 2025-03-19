@@ -1,7 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { InboxMessage } from "@prisma/client";
 
-export class InboxMessageEntity implements InboxMessage {
+export class InboxMessageEntity {
 	@ApiProperty({ description: "ID" })
 	id: string;
 
@@ -14,7 +13,7 @@ export class InboxMessageEntity implements InboxMessage {
 	@ApiProperty({ description: "Дата последнего обновления" })
 	updatedAt: Date;
 
-	constructor(data: InboxMessage) {
+	constructor(data: InboxMessageEntity) {
 		this.id = data.id;
 		this.message = data.message;
 		this.createdAt = data.createdAt;

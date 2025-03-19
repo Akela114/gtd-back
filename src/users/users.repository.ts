@@ -1,53 +1,55 @@
-import { PrismaService } from "@/prisma/prisma.service";
-import { Injectable } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
+import { DB_CONNECTION_PROVIDER_NAME } from "@/constants";
+import { AvailableTableColumns, DBConnection } from "@/drizzle/drizzle.types";
+import { users } from "@/drizzle/schema/schema";
+import { Inject, Injectable } from "@nestjs/common";
+import { eq } from "drizzle-orm";
 
 @Injectable()
 export class UsersRepository {
-	constructor(private prismaService: PrismaService) {}
+	constructor(
+		@Inject(DB_CONNECTION_PROVIDER_NAME) private dbConnection: DBConnection,
+	) {}
 
-	getUserById(id: Prisma.UserWhereUniqueInput["id"]) {
-		return this.prismaService.user.findUnique({
-			where: {
-				id,
-			},
-			include: {
-				refreshTokens: true,
-			},
-		});
+	async getUserById(userId: string) {
+		const result = await this.dbConnection
+			.select()
+			.from(users)
+			.where(eq(users.id, userId));
+
+		return result[0];
 	}
 
-	getUserByUsername(username: Prisma.UserWhereUniqueInput["username"]) {
-		return this.prismaService.user.findUnique({
-			where: {
-				username,
-			},
-		});
+	async getUserByUsername(username: string) {
+		const result = await this.dbConnection
+			.select()
+			.from(users)
+			.where(eq(users.username, username));
+
+		return result[0];
 	}
 
-	getUserByEmail(email: Prisma.UserWhereUniqueInput["email"]) {
-		return this.prismaService.user.findUnique({
-			where: {
-				email,
-			},
-		});
+	async getUserByEmail(email: string) {
+		const result = await this.dbConnection
+			.select()
+			.from(users)
+			.where(eq(users.email, email));
+
+		return result[0];
 	}
 
-	createUser(data: Omit<Prisma.UserCreateInput, "id">) {
-		return this.prismaService.user.create({
-			data,
-		});
+	async createUser(data: AvailableTableColumns<typeof users>) {
+		const user = await this.dbConnection.insert(users).values(data).returning();
+
+		return user[0];
 	}
 
-	updateUser(
-		id: Prisma.UserWhereUniqueInput["id"],
-		data: Omit<Prisma.UserUpdateInput, "id">,
-	) {
-		return this.prismaService.user.update({
-			where: {
-				id,
-			},
-			data,
-		});
+	async updateUser(id: string, data: AvailableTableColumns<typeof users>) {
+		const result = await this.dbConnection
+			.update(users)
+			.set(data)
+			.where(eq(users.id, id))
+			.returning();
+
+		return result[0];
 	}
 }

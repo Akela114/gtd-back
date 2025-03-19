@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import {
+	BadRequestException,
+	Injectable,
+	UnprocessableEntityException,
+} from "@nestjs/common";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UserPasswordService } from "./user-password.service";
 import { UsersRepository } from "./users.repository";
@@ -33,12 +37,18 @@ export class UsersService {
 			passwordSalt,
 		);
 
-		return this.usersRepository.createUser({
+		const createdUser = await this.usersRepository.createUser({
 			username: dto.username,
 			email: dto.email,
 			passwordHash,
 			passwordSalt,
 		});
+
+		if (!createdUser) {
+			throw new UnprocessableEntityException("User not created");
+		}
+
+		return createdUser;
 	}
 
 	async getUserById(userId: string) {

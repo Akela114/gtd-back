@@ -1,8 +1,9 @@
+import { ZodValidationPipe } from "@/common/pipes/zod-validation.pipe";
 import { Body, Controller, Post, Req, Res, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiCreatedResponse } from "@nestjs/swagger";
-import { Request, Response } from "express";
+import { Response } from "express";
 import { AuthService } from "./auth.service";
-import { SignInDto } from "./dto/sign-in.dto";
+import { SignInDto, signInSchema } from "./dto/sign-in.dto";
 import { SignInEntity } from "./entities/sign-in.entity";
 import { SignOutEntity } from "./entities/sign-out.entity";
 import { RefreshTokenGuard } from "./guards/refresh-token.guard";
@@ -14,7 +15,7 @@ export class AuthController {
 	@Post("sign-in")
 	@ApiCreatedResponse({ type: SignInEntity })
 	async signIn(
-		@Body() dto: SignInDto,
+		@Body(new ZodValidationPipe(signInSchema)) dto: SignInDto,
 		@Res({ passthrough: true }) res: Response,
 	) {
 		const data = await this.authService.signIn(dto);
@@ -31,7 +32,7 @@ export class AuthController {
 	@ApiBearerAuth()
 	@ApiCreatedResponse({ type: SignInEntity })
 	async refresh(
-		@Req() req: Request,
+		@Req() req: ExpressRequestWithUser,
 		@Res({ passthrough: true }) res: Response,
 	) {
 		const data = await this.authService.refresh(req.user);

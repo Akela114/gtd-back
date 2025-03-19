@@ -1,22 +1,27 @@
 import { REGEXES } from "@/common/validation/regexes";
+import { users } from "@/drizzle/schema/schema";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEmail, IsNotEmpty, IsString, Matches } from "class-validator";
+import { createInsertSchema } from "drizzle-zod";
+import { z } from "zod";
 
-export class CreateUserDto {
-	@IsString()
-	@IsNotEmpty()
+export const createUserSchema = createInsertSchema(users)
+	.pick({
+		username: true,
+		email: true,
+	})
+	.extend({
+		password: z.string().regex(REGEXES.password),
+	});
+
+export type CreateUser = z.infer<typeof createUserSchema>;
+
+export class CreateUserDto implements CreateUser {
 	@ApiProperty({ description: "Имя пользователя" })
 	username: string;
 
-	@IsString()
-	@IsNotEmpty()
-	@IsEmail()
 	@ApiProperty({ description: "Почта" })
 	email: string;
 
-	@IsString()
-	@IsNotEmpty()
-	@Matches(REGEXES.password)
 	@ApiProperty({ description: "Пароль" })
 	password: string;
 }
